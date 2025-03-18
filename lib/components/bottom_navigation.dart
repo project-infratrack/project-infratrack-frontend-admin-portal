@@ -12,14 +12,12 @@ class BottomNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Maintain the original color.
     const navColor = Color(0xFF2C3E50);
 
     return SafeArea(
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         padding: const EdgeInsets.symmetric(horizontal: 32),
-        // Increased height from 70 to 90
         height: 90,
         decoration: BoxDecoration(
           gradient: const LinearGradient(
@@ -101,7 +99,7 @@ class NavItem extends StatelessWidget {
         width: 60,
         height: 60,
         decoration: BoxDecoration(
-          color: isSelected ? navColor : Colors.transparent,
+          color: isSelected ? navColor : const Color.fromARGB(0, 255, 255, 255),
           borderRadius: BorderRadius.circular(30),
           border: isSelected ? null : Border.all(color: navColor, width: 2),
         ),

@@ -3,6 +3,7 @@ import 'package:infratrack/screens/Gov_issue_description.dart';
 import 'package:infratrack/screens/Government_issue_screen_high.dart';
 import 'package:infratrack/screens/Government_issue_screen_low.dart';
 import 'package:infratrack/screens/Government_issue_screen_mid.dart';
+import 'package:infratrack/screens/History.dart';
 import 'package:infratrack/screens/home.dart';
 import 'package:infratrack/screens/login.dart';
 
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
       title: 'Infra Track',
       theme: ThemeData(
         primarySwatch: Colors.blueGrey,
-        scaffoldBackgroundColor: Colors.blueGrey.shade900,
+        scaffoldBackgroundColor: const Color.fromARGB(255, 255, 255, 255),
         textTheme: const TextTheme(
           bodyMedium: TextStyle(color: Colors.white),
         ),
@@ -36,6 +37,7 @@ class MyApp extends StatelessWidget {
         "/Gov_high": (context) => const GovernmentIssueScreenHigh(),
         "/Gov_mid": (context) => const GovernmentIssueScreenMid(),
         "/Gov_low": (context) => const GovernmentIssueScreenLow(),
+        "/history": (context) => HistoryScreen(),
       },
     );
   }

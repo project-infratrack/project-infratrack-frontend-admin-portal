@@ -46,7 +46,10 @@ class _HomeScreenState extends State<HomeScreen>
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFFEAF4FF), Color(0xFFD9EFFE)],
+            colors: [
+              Color.fromARGB(255, 255, 255, 255),
+              Color.fromARGB(255, 255, 255, 255)
+            ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -59,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen>
               children: [
                 // Custom AppBar
                 Container(
-                  color: Colors.transparent,
+                  color: const Color.fromARGB(0, 255, 255, 255),
                   padding: const EdgeInsets.symmetric(
                       horizontal: 16.0, vertical: 8.0),
                   child: Row(

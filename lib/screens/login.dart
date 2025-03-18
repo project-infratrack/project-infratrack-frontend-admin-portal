@@ -1,4 +1,40 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:infratrack/helper/api_config.dart';
+
+// LoggingService with API handlers
+class LoggingService {
+  // Basic logging function
+  static void log(String message) {
+    print(message);
+  }
+
+  /// Calls the login API with the provided [adminNo] and [password].
+  /// Expects a JSON payload with keys "adminNo" and "password".
+  static Future<dynamic> login(String adminNo, String password) async {
+    final url =
+        Uri.parse('${ApiConfig.baseUrl}/login'); // Update endpoint if necessary
+    final headers = {'Content-Type': 'application/json'};
+    final body = jsonEncode({
+      "adminNo": adminNo,
+      "password": password,
+    });
+
+    try {
+      final response = await http.post(url, headers: headers, body: body);
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        log('Login failed: status ${response.statusCode}, body: ${response.body}');
+        throw Exception('Failed to login. Status code: ${response.statusCode}');
+      }
+    } catch (error) {
+      log('Exception during login: $error');
+      rethrow;
+    }
+  }
+}
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -10,6 +46,18 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool _obscureText = true; // Toggles password visibility
 
+  // Controllers to capture the input values
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  // Optionally, you might want to show a loading indicator during the API call.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,8 +102,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 50),
 
-                      // Username Field (Improved)
+                      // Username Field (adminNo)
                       TextField(
+                        controller: _usernameController,
                         decoration: InputDecoration(
                           prefixIcon:
                               const Icon(Icons.person, color: Colors.white70),
@@ -79,8 +128,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 25),
 
-                      // Password Field with Visibility Toggle (Improved)
+                      // Password Field with Visibility Toggle
                       TextField(
+                        controller: _passwordController,
                         obscureText: _obscureText,
                         decoration: InputDecoration(
                           prefixIcon:
@@ -109,8 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             onPressed: () {
                               setState(() {
-                                _obscureText =
-                                    !_obscureText; // Toggle visibility
+                                _obscureText = !_obscureText;
                               });
                             },
                           ),
@@ -119,7 +168,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 10),
 
-                      // Forgot Password
+                      // Forgot Password Button
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
@@ -134,10 +183,24 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 10),
 
-                      // Login Button
+                      // Login Button that calls the API
                       ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, "/home");
+                        onPressed: () async {
+                          final adminNo = _usernameController.text;
+                          final password = _passwordController.text;
+                          try {
+                            final result =
+                                await LoggingService.login(adminNo, password);
+                            // On a successful login, navigate to the home screen.
+                            Navigator.pushNamed(context, "/home");
+                          } catch (e) {
+                            // Display error message if the login fails.
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content:
+                                      Text("Login failed: ${e.toString()}")),
+                            );
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.black,

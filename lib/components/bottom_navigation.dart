@@ -5,10 +5,10 @@ class BottomNavigation extends StatelessWidget {
   final ValueChanged<int> onItemTapped;
 
   const BottomNavigation({
-    Key? key,
+    super.key,
     required this.selectedIndex,
     required this.onItemTapped,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -102,13 +102,13 @@ class NavItem extends StatelessWidget {
   final Color navColor;
 
   const NavItem({
-    Key? key,
+    super.key,
     required this.icon,
     required this.label,
     required this.isSelected,
     required this.onTap,
     required this.navColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

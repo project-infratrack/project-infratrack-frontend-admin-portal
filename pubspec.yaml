@@ -15,6 +15,7 @@ dependencies:
   flutter_otp_text_field: ^1.4.0+2
   flutter_launcher_icons: ^0.14.3
   image_picker: ^0.8.7+4
+  http: ^0.13.0
 
 dev_dependencies:
   flutter_test:
@@ -29,6 +30,3 @@ flutter:
     - assets/img_rectangle_28.png
     - assets/pothole.png
     - assets/map_placeholder.png
-    
-
-

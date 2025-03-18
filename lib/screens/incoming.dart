@@ -67,7 +67,7 @@ class _IncomingScreenState extends State<IncomingScreen> {
                   ),
                   const SizedBox(height: 50),
                   _buildIssueButton(context, "Pothole in Dehiwala",
-                      '/issue1'), // Navigate to Issue 1 page
+                      '/issue_description'), // Navigate to Issue 1 page
                   const SizedBox(height: 10),
                   _buildIssueButton(context, "Pothole in Nugegoda",
                       '/issue2'), // Navigate to Issue 2 page

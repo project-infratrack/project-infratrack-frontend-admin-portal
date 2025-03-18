@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:infratrack/components/bottom_navigation.dart';
 
-
-
 class GovernmentIssueDescriptionScreen extends StatefulWidget {
   const GovernmentIssueDescriptionScreen({super.key});
 
@@ -80,7 +78,7 @@ class _GovernmentIssueDescriptionScreenState
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: Image.asset(
-                      'assets/png/pothole.png',
+                      'assets/pothole.png',
                       height: 180,
                       width: double.infinity,
                       fit: BoxFit.cover,
@@ -106,7 +104,7 @@ class _GovernmentIssueDescriptionScreenState
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: Image.asset(
-                      'assets/png/map_placeholder.png',
+                      'assets/map_placeholder.png',
                       height: 180,
                       width: double.infinity,
                       fit: BoxFit.cover,
@@ -126,7 +124,7 @@ class _GovernmentIssueDescriptionScreenState
                       _buildActionButton("Accept", Colors.green, () {
                         // Handle Accept
                       }),
-                      _buildActionButton("Decline", Colors.red, () {
+                      _buildActionButton("Reject", Colors.red, () {
                         // Handle Decline
                       }),
                     ],

@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:infratrack/screens/Accepted.dart';
 import 'package:infratrack/screens/Gov_issue_description.dart';
 import 'package:infratrack/screens/Government_issue_screen_high.dart';
 import 'package:infratrack/screens/Government_issue_screen_low.dart';
 import 'package:infratrack/screens/Government_issue_screen_mid.dart';
 import 'package:infratrack/screens/History.dart';
+import 'package:infratrack/screens/Rejected.dart';
+import 'package:infratrack/screens/Status.dart';
 import 'package:infratrack/screens/home.dart';
+import 'package:infratrack/screens/incoming.dart';
 import 'package:infratrack/screens/login.dart';
 
 // Placeholder for Reset Password
@@ -38,6 +42,10 @@ class MyApp extends StatelessWidget {
         "/Gov_mid": (context) => const GovernmentIssueScreenMid(),
         "/Gov_low": (context) => const GovernmentIssueScreenLow(),
         "/history": (context) => HistoryScreen(),
+        "/incoming": (context) => const IncomingScreen(),
+        "/Accept": (context) => const AcceptedScreen(),
+        "/Reject": (context) => const IssueRejectedScreen(),
+        "/Status": (context) => const StatusScreen(),
       },
     );
   }

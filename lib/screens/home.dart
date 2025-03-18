@@ -84,7 +84,9 @@ class _HomeScreenState extends State<HomeScreen>
                       IconButton(
                         icon: const Icon(Icons.account_circle_rounded,
                             color: Color(0xFF2C3E50)),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.pushNamed(context, "/issue_description");
+                        },
                       ),
                     ],
                   ),

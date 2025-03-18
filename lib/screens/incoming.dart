@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:infratrack/components/bottom_navigation.dart';
 
-class GovernmentIssueScreenHigh extends StatefulWidget {
-  const GovernmentIssueScreenHigh({super.key});
+class IncomingScreen extends StatefulWidget {
+  const IncomingScreen({super.key});
 
   @override
-  _GovernmentIssueScreenHighState createState() =>
-      _GovernmentIssueScreenHighState();
+  _IncomingScreenState createState() => _IncomingScreenState();
 }
 
-class _GovernmentIssueScreenHighState extends State<GovernmentIssueScreenHigh> {
+class _IncomingScreenState extends State<IncomingScreen> {
   int _selectedIndex = 0; // Track the selected index
 
   void _onItemTapped(int index) {
@@ -51,7 +50,7 @@ class _GovernmentIssueScreenHighState extends State<GovernmentIssueScreenHigh> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const Text(
-              "High priority issues",
+              "Incoming Issues",
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -67,13 +66,17 @@ class _GovernmentIssueScreenHighState extends State<GovernmentIssueScreenHigh> {
                     height: 200,
                   ),
                   const SizedBox(height: 50),
-                  _buildIssueButton(context, "Issue 1", "/Status"),
+                  _buildIssueButton(context, "Pothole in Dehiwala",
+                      '/issue_description'), // Navigate to Issue 1 page
                   const SizedBox(height: 10),
-                  _buildIssueButton(context, "Issue 2", "/issue2"),
+                  _buildIssueButton(context, "Pothole in Nugegoda",
+                      '/issue2'), // Navigate to Issue 2 page
                   const SizedBox(height: 10),
-                  _buildIssueButton(context, "Issue 3", "/issue3"),
+                  _buildIssueButton(context, "Pothole in Battaramulla",
+                      '/issue3'), // Navigate to Issue 3 page
                   const SizedBox(height: 10),
-                  _buildIssueButton(context, "Issue 4", "/issue4"),
+                  _buildIssueButton(context, "Pothole in Kalaniya",
+                      '/issue4'), // Navigate to Issue 4 page
                 ],
               ),
             ),
@@ -87,13 +90,13 @@ class _GovernmentIssueScreenHighState extends State<GovernmentIssueScreenHigh> {
     );
   }
 
+  // Customize the width of the buttons here (65% of screen width)
   Widget _buildIssueButton(
       BuildContext context, String title, String routeName) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: SizedBox(
-        width: MediaQuery.of(context).size.width *
-            0.65, // Custom width 65% of screen
+        width: MediaQuery.of(context).size.width * 0.80, // 65% of screen width
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF2C3E50),
@@ -103,7 +106,8 @@ class _GovernmentIssueScreenHighState extends State<GovernmentIssueScreenHigh> {
             padding: const EdgeInsets.symmetric(vertical: 16),
           ),
           onPressed: () {
-            Navigator.pushNamed(context, routeName); // Navigate to the route
+            Navigator.pushNamed(
+                context, routeName); // Navigate to the route passed
           },
           child: Text(
             title,

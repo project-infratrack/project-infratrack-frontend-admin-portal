@@ -1,8 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:infratrack/components/bottom_navigation.dart';
 
-class GovernmentIssueScreenMid extends StatelessWidget {
+class GovernmentIssueScreenMid extends StatefulWidget {
   const GovernmentIssueScreenMid({super.key});
+
+  @override
+  _GovernmentIssueScreenMidState createState() =>
+      _GovernmentIssueScreenMidState();
+}
+
+class _GovernmentIssueScreenMidState extends State<GovernmentIssueScreenMid> {
+  int _selectedIndex = 0; // Track the selected index
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    // Handle navigation or any other logic for each index
+    if (index == 0) {
+      Navigator.pushNamed(context, "/home"); // Example navigation
+    } else if (index == 1) {
+      Navigator.pushNamed(context, "/history"); // Example navigation
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,10 +81,8 @@ class GovernmentIssueScreenMid extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: BottomNavigation(
-        selectedIndex: 0,
-        onItemTapped: (index) {
-          // Handle navigation changes
-        },
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
       ),
     );
   }
@@ -74,7 +92,7 @@ class GovernmentIssueScreenMid extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: SizedBox(
         width: MediaQuery.of(context).size.width *
-            0.65, // Custom width 85% of screen
+            0.65, // Custom width 65% of screen
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF2C3E50),

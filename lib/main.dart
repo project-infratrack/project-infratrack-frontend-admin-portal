@@ -5,6 +5,7 @@ import 'package:infratrack/screens/Government_issue_screen_low.dart';
 import 'package:infratrack/screens/Government_issue_screen_mid.dart';
 import 'package:infratrack/screens/History.dart';
 import 'package:infratrack/screens/home.dart';
+import 'package:infratrack/screens/incoming.dart';
 import 'package:infratrack/screens/login.dart';
 
 // Placeholder for Reset Password
@@ -38,6 +39,7 @@ class MyApp extends StatelessWidget {
         "/Gov_mid": (context) => const GovernmentIssueScreenMid(),
         "/Gov_low": (context) => const GovernmentIssueScreenLow(),
         "/history": (context) => HistoryScreen(),
+        "/incoming": (context) => IncomingScreen(),
       },
     );
   }

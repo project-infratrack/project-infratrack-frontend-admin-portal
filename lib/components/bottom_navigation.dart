@@ -12,12 +12,14 @@ class BottomNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Maintain the original color.
     const navColor = Color(0xFF2C3E50);
 
     return SafeArea(
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         padding: const EdgeInsets.symmetric(horizontal: 32),
+        // Increased height from 70 to 90
         height: 90,
         decoration: BoxDecoration(
           gradient: const LinearGradient(
@@ -51,10 +53,27 @@ class BottomNavigation extends StatelessWidget {
               child: FloatingActionButton(
                 backgroundColor: navColor,
                 onPressed: () {
-                  Navigator.pushNamed(context, "/add_report");
+                  Navigator.pushNamed(context, "/incoming");
                 },
                 shape: const CircleBorder(),
-                child: const Icon(Icons.add, size: 24, color: Colors.white),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Background Circle
+                    Icon(
+                      Icons
+                          .check_box_outline_blank, // A simple checklist background
+                      size: 32,
+                      color: Colors.white.withOpacity(0.5),
+                    ),
+                    // Task Icon in the center
+                    const Icon(
+                      Icons.task, // Main task manager icon
+                      size: 24,
+                      color: Colors.white,
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(width: 55),
@@ -62,7 +81,10 @@ class BottomNavigation extends StatelessWidget {
               icon: Icons.history,
               label: "History",
               isSelected: selectedIndex == 1,
-              onTap: () => onItemTapped(1),
+              onTap: () {
+                // Navigate to the "/history" page
+                Navigator.pushNamed(context, "/history");
+              },
               navColor: navColor,
             ),
           ],
@@ -99,7 +121,7 @@ class NavItem extends StatelessWidget {
         width: 60,
         height: 60,
         decoration: BoxDecoration(
-          color: isSelected ? navColor : const Color.fromARGB(0, 255, 255, 255),
+          color: isSelected ? navColor : Colors.transparent,
           borderRadius: BorderRadius.circular(30),
           border: isSelected ? null : Border.all(color: navColor, width: 2),
         ),

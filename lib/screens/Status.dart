@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:infratrack/components/bottom_navigation.dart';
 
-class GovernmentIssueDescriptionScreen extends StatefulWidget {
-  const GovernmentIssueDescriptionScreen({super.key});
+class StatusScreen extends StatefulWidget {
+  const StatusScreen({super.key});
 
   @override
-  _GovernmentIssueDescriptionScreenState createState() =>
-      _GovernmentIssueDescriptionScreenState();
+  _StatusScreenState createState() => _StatusScreenState();
 }
 
-class _GovernmentIssueDescriptionScreenState
-    extends State<GovernmentIssueDescriptionScreen> {
+class _StatusScreenState extends State<StatusScreen> {
   String? selectedPriority;
   final List<String> priorityTypes = [
-    "High Priority",
-    "Medium Priority",
-    "Low Priority",
+    "Pending",
+    "Ongoing",
+    "Done",
   ];
 
   @override
@@ -56,7 +54,7 @@ class _GovernmentIssueDescriptionScreenState
                 children: [
                   // Title & Complaint ID
                   const Text(
-                    "Pothole in Nugegoda",
+                    "Status: Pothole in Nugegoda",
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -116,21 +114,6 @@ class _GovernmentIssueDescriptionScreenState
                   _buildPriorityDropdown(),
 
                   const SizedBox(height: 24),
-
-                  // Action Buttons
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _buildActionButton("Accept", Colors.green, () {
-                        Navigator.pushNamed(context, "/Accept");
-
-                        // Handle Accept
-                      }),
-                      _buildActionButton("Reject", Colors.red, () {
-                        Navigator.pushNamed(context, "/Reject");
-                      }),
-                    ],
-                  ),
                 ],
               ),
             ),

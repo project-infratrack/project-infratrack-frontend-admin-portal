@@ -67,13 +67,13 @@ class _GovernmentIssueScreenHighState extends State<GovernmentIssueScreenHigh> {
                     height: 200,
                   ),
                   const SizedBox(height: 50),
-                  _buildIssueButton(context, "Issue 1"),
+                  _buildIssueButton(context, "Issue 1", "/Status"),
                   const SizedBox(height: 10),
-                  _buildIssueButton(context, "Issue 2"),
+                  _buildIssueButton(context, "Issue 2", "/issue2"),
                   const SizedBox(height: 10),
-                  _buildIssueButton(context, "Issue 3"),
+                  _buildIssueButton(context, "Issue 3", "/issue3"),
                   const SizedBox(height: 10),
-                  _buildIssueButton(context, "Issue 4"),
+                  _buildIssueButton(context, "Issue 4", "/issue4"),
                 ],
               ),
             ),
@@ -87,7 +87,8 @@ class _GovernmentIssueScreenHighState extends State<GovernmentIssueScreenHigh> {
     );
   }
 
-  Widget _buildIssueButton(BuildContext context, String title) {
+  Widget _buildIssueButton(
+      BuildContext context, String title, String routeName) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: SizedBox(
@@ -101,7 +102,9 @@ class _GovernmentIssueScreenHighState extends State<GovernmentIssueScreenHigh> {
             ),
             padding: const EdgeInsets.symmetric(vertical: 16),
           ),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushNamed(context, routeName); // Navigate to the route
+          },
           child: Text(
             title,
             style: const TextStyle(

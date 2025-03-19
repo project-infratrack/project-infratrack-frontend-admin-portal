@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
         "/Gov_mid": (context) => const GovernmentIssueScreenMid(),
         "/Gov_low": (context) => const GovernmentIssueScreenLow(),
         "/history": (context) => HistoryScreen(),
-        "/incoming": (context) => const IncomingScreen(),
+        "/incoming": (context) => IncomingScreen(),
         "/Accept": (context) => const AcceptedScreen(),
         "/Reject": (context) => const IssueRejectedScreen(),
         "/Status": (context) => const StatusScreen(),

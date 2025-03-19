@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:infratrack/helper/api_config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoggingService {
   /// Sends a login request with the provided [adminNo] and [password].
@@ -20,8 +21,16 @@ class LoggingService {
     );
 
     if (response.statusCode == 200) {
-      // Optionally, parse the response body if needed:
-      // final responseData = jsonDecode(response.body);
+      // Parse the JSON response to retrieve the token
+      final data = jsonDecode(response.body);
+      final token = data["token"] as String?;
+
+      if (token != null && token.isNotEmpty) {
+        // Save the token in SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('auth_token', token);
+      }
+
       return true;
     } else {
       // Handle error responses appropriately.

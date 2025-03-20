@@ -1,0 +1,2 @@
+C:/Users/isand/OneDrive/Documents/GitHub/project-infratrack-frontend-admin-portal/android/app/.cxx/Debug/2p3r3ey1/x86/CMakeFiles/edit_cache.dir
+C:/Users/isand/OneDrive/Documents/GitHub/project-infratrack-frontend-admin-portal/android/app/.cxx/Debug/2p3r3ey1/x86/CMakeFiles/rebuild_cache.dir

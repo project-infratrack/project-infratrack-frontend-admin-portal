@@ -143,7 +143,7 @@ class _StatusScreenState extends State<StatusScreen> {
           dropdownColor: const Color(0xFF2C3E50),
           value: selectedPriority,
           hint: const Text(
-            "Choose Priority Type",
+            "Choose Status Type",
             style: TextStyle(color: Colors.white, fontSize: 16),
           ),
           icon: const Icon(Icons.arrow_drop_down, color: Colors.white),

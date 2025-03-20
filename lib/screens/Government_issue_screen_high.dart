@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:infratrack/components/bottom_navigation.dart';
+import 'package:infratrack/model/highServiceModel.dart';
+import 'package:infratrack/services/highService.dart';
 
 class GovernmentIssueScreenHigh extends StatefulWidget {
   const GovernmentIssueScreenHigh({super.key});
@@ -10,17 +12,23 @@ class GovernmentIssueScreenHigh extends StatefulWidget {
 }
 
 class _GovernmentIssueScreenHighState extends State<GovernmentIssueScreenHigh> {
-  int _selectedIndex = 0; // Track the selected index
+  int _selectedIndex = 0;
+  late Future<List<HighPriorityReport>> reportsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    reportsFuture = HighPriorityReportService.fetchHighPriorityReports();
+  }
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
-    // Navigate to different screens based on the selected index
     if (index == 0) {
-      Navigator.pushNamed(context, "/home"); // Example navigation
+      Navigator.pushNamed(context, "/home");
     } else if (index == 1) {
-      Navigator.pushNamed(context, "/history"); // Example navigation
+      Navigator.pushNamed(context, "/history");
     }
   }
 
@@ -39,45 +47,67 @@ class _GovernmentIssueScreenHighState extends State<GovernmentIssueScreenHigh> {
         ),
         actions: [
           IconButton(
-            icon:
-                const Icon(Icons.account_circle, color: Colors.black, size: 28),
+            icon: const Icon(Icons.account_circle, color: Colors.black, size: 28),
             onPressed: () {},
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Text(
-              "High priority issues",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text(
+                "High priority issues",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            Center(
-              child: Column(
-                children: [
-                  Image.asset(
-                    'assets/infra_track_logo.png',
-                    height: 200,
-                  ),
-                  const SizedBox(height: 50),
-                  _buildIssueButton(context, "Issue 1", "/Status"),
-                  const SizedBox(height: 10),
-                  _buildIssueButton(context, "Issue 2", "/issue2"),
-                  const SizedBox(height: 10),
-                  _buildIssueButton(context, "Issue 3", "/issue3"),
-                  const SizedBox(height: 10),
-                  _buildIssueButton(context, "Issue 4", "/issue4"),
-                ],
+              const SizedBox(height: 20),
+              Center(
+                child: Column(
+                  children: [
+                    Image.asset(
+                      'assets/infra_track_logo.png',
+                      height: 200,
+                    ),
+                    const SizedBox(height: 30),
+                    FutureBuilder<List<HighPriorityReport>>(
+                      future: reportsFuture,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return const Text('No high priority issues found');
+                        } else {
+                          final reports = snapshot.data!;
+                          return Column(
+                            children: reports.map((report) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                child: _buildIssueButton(
+                                  context,
+                                  issueId: report.id,
+                                  issueType: report.reportType,
+                                  description: report.description,
+                                  routeName: "/Status",
+                                ),
+                              );
+                            }).toList(),
+                          );
+                        }
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: BottomNavigation(
@@ -88,30 +118,62 @@ class _GovernmentIssueScreenHighState extends State<GovernmentIssueScreenHigh> {
   }
 
   Widget _buildIssueButton(
-      BuildContext context, String title, String routeName) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5.0),
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width *
-            0.65, // Custom width 65% of screen
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF2C3E50),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            padding: const EdgeInsets.symmetric(vertical: 16),
+    BuildContext context, {
+    required String issueId,
+    required String issueType,
+    required String description,
+    required String routeName,
+  }) {
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * 0.85,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF2C3E50),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
           ),
-          onPressed: () {
-            Navigator.pushNamed(context, routeName); // Navigate to the route
-          },
-          child: Text(
-            title,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.white,
+          padding: const EdgeInsets.all(16), // Uniform padding for consistency
+        ),
+        onPressed: () {
+          Navigator.pushNamed(context, routeName);
+        },
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Icon(Icons.report, color: Colors.white), // Optional icon
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "ID: $issueId",
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "Type: $issueType",
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    description,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

@@ -20,7 +20,7 @@ dependencies:
   geocoding: ^3.0.0
   permission_handler: ^11.4.0
   geolocator: ^13.0.3
-  google_maps_apis: ^3.0.0
+  google_maps_apis: ^1.1.1 # downgraded version
   google_maps_flutter: ^2.11.0
 
 dev_dependencies:

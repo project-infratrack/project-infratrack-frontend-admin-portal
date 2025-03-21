@@ -16,6 +16,10 @@ class _IncomingScreenState extends State<IncomingScreen> {
   @override
   void initState() {
     super.initState();
+    _loadIncomingReports();
+  }
+
+  void _loadIncomingReports() {
     _incomingReportsFuture = IncomingService().getIncomingReports();
   }
 
@@ -68,6 +72,9 @@ class _IncomingScreenState extends State<IncomingScreen> {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   } else if (snapshot.hasData) {
                     final reports = snapshot.data!;
+                    if (reports.isEmpty) {
+                      return const Center(child: Text('No reports available'));
+                    }
                     return ListView.builder(
                       itemCount: reports.length,
                       itemBuilder: (context, index) {
@@ -88,7 +95,7 @@ class _IncomingScreenState extends State<IncomingScreen> {
         selectedIndex: 0,
         onItemTapped: (index) {
           if (index == 0) {
-            // Already on Incoming page.
+            // Already on Incoming page
           } else if (index == 1) {
             Navigator.pushReplacementNamed(context, "/history");
           }
@@ -107,8 +114,19 @@ class _IncomingScreenState extends State<IncomingScreen> {
       margin: const EdgeInsets.only(bottom: 16),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        onTap: () {
-          Navigator.pushReplacementNamed(context, "/issue_description");
+        onTap: () async {
+          final result = await Navigator.pushNamed(
+            context,
+            "/issue_description",
+            arguments: report.id,
+          );
+
+          // If Accepted or Rejected, reload list
+          if (result == true) {
+            setState(() {
+              _loadIncomingReports();
+            });
+          }
         },
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -143,10 +161,7 @@ class _IncomingScreenState extends State<IncomingScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildTag(
-                    "Pending", // Using a default status since the API does not provide one.
-                    const Color(0xFFFFA500),
-                  ),
+                  _buildTag("Pending", const Color(0xFFFFA500)),
                   const Icon(Icons.arrow_forward_ios, color: Colors.white),
                 ],
               ),

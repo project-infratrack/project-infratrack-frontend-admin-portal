@@ -47,7 +47,8 @@ class _GovernmentIssueScreenLowState extends State<GovernmentIssueScreenLow> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.account_circle, color: Colors.black, size: 28),
+            icon:
+                const Icon(Icons.account_circle, color: Colors.black, size: 28),
             onPressed: () {},
           ),
         ],
@@ -74,7 +75,8 @@ class _GovernmentIssueScreenLowState extends State<GovernmentIssueScreenLow> {
                   } else if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text('No low priority issues found.'));
+                    return const Center(
+                        child: Text('No low priority issues found.'));
                   } else {
                     final reports = snapshot.data!;
                     return ListView.builder(
@@ -88,8 +90,6 @@ class _GovernmentIssueScreenLowState extends State<GovernmentIssueScreenLow> {
                             issueId: report.id,
                             issueType: report.reportType,
                             description: report.description,
-                            routeName: "/issueDetailsLow",
-                            report: report,
                           ),
                         );
                       },
@@ -113,8 +113,6 @@ class _GovernmentIssueScreenLowState extends State<GovernmentIssueScreenLow> {
     required String issueId,
     required String issueType,
     required String description,
-    required String routeName,
-    required LowPriorityReport report,
   }) {
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.85, // Consistent width
@@ -129,14 +127,14 @@ class _GovernmentIssueScreenLowState extends State<GovernmentIssueScreenLow> {
         onPressed: () {
           Navigator.pushNamed(
             context,
-            routeName,
-            arguments: report,
+            '/status',
+            arguments: issueId, // Pass reportId dynamically
           );
         },
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.report, color: Colors.white), // Optional icon
+            const Icon(Icons.report, color: Colors.white),
             const SizedBox(width: 12),
             Expanded(
               child: Column(

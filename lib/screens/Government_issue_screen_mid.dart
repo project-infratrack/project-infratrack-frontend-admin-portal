@@ -39,11 +39,11 @@ class _GovernmentIssueScreenMidState extends State<GovernmentIssueScreenMid> {
       List<MidServiceModel> reports =
           await service.fetchAndStoreMidPriorityReports();
       setState(() {
-        _midPriorityReports = reports;
+        // ✅ Filter out Done reports
+        _midPriorityReports = reports.where((r) => r.status != 'Done').toList();
         _isLoading = false;
       });
     } catch (e) {
-      print("Error fetching reports: $e");
       setState(() {
         _isLoading = false;
       });
@@ -89,18 +89,19 @@ class _GovernmentIssueScreenMidState extends State<GovernmentIssueScreenMid> {
                             height: 200,
                           ),
                           const SizedBox(height: 30),
-                          ..._midPriorityReports.map((report) {
-                            return Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 8.0),
-                              child: _buildIssueButton(
-                                context,
-                                issueId: report.id,
-                                issueType: report.reportType,
-                                description: report.description,
-                              ),
-                            );
-                          }).toList(),
+                          if (_midPriorityReports.isEmpty)
+                            const Text('No mid priority issues found.')
+                          else
+                            ..._midPriorityReports.map((report) {
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: _buildIssueButton(
+                                  context,
+                                  report: report,
+                                ),
+                              );
+                            }).toList(),
                         ],
                       ),
                     ),
@@ -117,9 +118,7 @@ class _GovernmentIssueScreenMidState extends State<GovernmentIssueScreenMid> {
 
   Widget _buildIssueButton(
     BuildContext context, {
-    required String issueId,
-    required String issueType,
-    required String description,
+    required MidServiceModel report,
   }) {
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.85,
@@ -131,12 +130,23 @@ class _GovernmentIssueScreenMidState extends State<GovernmentIssueScreenMid> {
           ),
           padding: const EdgeInsets.all(16),
         ),
-        onPressed: () {
-          Navigator.pushNamed(
+        onPressed: () async {
+          final result = await Navigator.pushNamed(
             context,
             '/status',
-            arguments: issueId, // Pass reportId dynamically
+            arguments: report.id,
           );
+
+          if (result == 'Done') {
+            setState(() {
+              _midPriorityReports.removeWhere((r) => r.id == report.id);
+            });
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text("Issue marked as Done and removed!")),
+            );
+          }
         },
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,7 +158,7 @@ class _GovernmentIssueScreenMidState extends State<GovernmentIssueScreenMid> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "ID: $issueId",
+                    "ID: ${report.id}",
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -157,7 +167,7 @@ class _GovernmentIssueScreenMidState extends State<GovernmentIssueScreenMid> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    "Type: $issueType",
+                    "Type: ${report.reportType}",
                     style: const TextStyle(
                       fontSize: 14,
                       color: Colors.white,
@@ -165,7 +175,7 @@ class _GovernmentIssueScreenMidState extends State<GovernmentIssueScreenMid> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    description,
+                    report.description,
                     style: const TextStyle(
                       fontSize: 12,
                       color: Colors.white,

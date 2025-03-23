@@ -24,17 +24,24 @@ class IncomingServiceModel {
   });
 
   factory IncomingServiceModel.fromJson(Map<String, dynamic> json) {
+    // Debug: Print raw JSON to check structure
+    print('Raw JSON: $json');
+
     return IncomingServiceModel(
-      id: json['id'] as String,
-      userId: json['userId'] as String,
-      reportType: json['reportType'] as String,
-      description: json['description'] as String,
-      location: json['location'] as String,
-      image: json['image'] as String,
-      latitude: (json['latitude'] as num).toDouble(),
-      longitude: (json['longitude'] as num).toDouble(),
-      thumbsUp: json['thumbsUp'] as int,
-      thumbsDown: json['thumbsDown'] as int,
+      id: json['id']?.toString() ?? '',
+      userId: json['userId']?.toString() ?? '',
+      reportType: json['reportType']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
+      location: json['location']?.toString() ?? '',
+      image: json['image']?.toString() ?? '',
+      latitude: (json['latitude'] != null)
+          ? (json['latitude'] as num).toDouble()
+          : 0.0,
+      longitude: (json['longitude'] != null)
+          ? (json['longitude'] as num).toDouble()
+          : 0.0,
+      thumbsUp: json['thumbsUp'] ?? 0,
+      thumbsDown: json['thumbsDown'] ?? 0,
     );
   }
 

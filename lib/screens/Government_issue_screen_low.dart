@@ -13,12 +13,14 @@ class GovernmentIssueScreenLow extends StatefulWidget {
 
 class _GovernmentIssueScreenLowState extends State<GovernmentIssueScreenLow> {
   int _selectedIndex = 0;
-  late Future<List<LowPriorityReport>> _lowPriorityReports;
+  List<LowPriorityReport> reportsList = [];
+  bool isLoading = true;
+  bool hasError = false;
 
   @override
   void initState() {
     super.initState();
-    _lowPriorityReports = LowPriorityReportService().fetchLowPriorityReports();
+    fetchReports();
   }
 
   void _onItemTapped(int index) {
@@ -29,6 +31,23 @@ class _GovernmentIssueScreenLowState extends State<GovernmentIssueScreenLow> {
       Navigator.pushNamed(context, "/home");
     } else if (index == 1) {
       Navigator.pushNamed(context, "/history");
+    }
+  }
+
+  Future<void> fetchReports() async {
+    try {
+      final reports =
+          await LowPriorityReportService().fetchLowPriorityReports();
+      setState(() {
+        // ✅ Filter out reports with status 'Done'
+        reportsList = reports.where((r) => r.status != 'Done').toList();
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        hasError = true;
+        isLoading = false;
+      });
     }
   }
 
@@ -60,36 +79,27 @@ class _GovernmentIssueScreenLowState extends State<GovernmentIssueScreenLow> {
             ),
             const SizedBox(height: 20),
             Expanded(
-              child: FutureBuilder<List<LowPriorityReport>>(
-                future: _lowPriorityReports,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(
-                        child: Text('No low priority issues found.'));
-                  } else {
-                    final reports = snapshot.data!;
-                    return ListView.builder(
-                      itemCount: reports.length,
-                      itemBuilder: (context, index) {
-                        final report = reports[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: _buildIssueButton(
-                            context,
-                            issueId: report.id,
-                            issueType: report.reportType,
-                            description: report.description,
-                          ),
-                        );
-                      },
-                    );
-                  }
-                },
-              ),
+              child: isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : hasError
+                      ? const Center(child: Text('Error loading reports'))
+                      : reportsList.isEmpty
+                          ? const Center(
+                              child: Text('No low priority issues found.'))
+                          : ListView.builder(
+                              itemCount: reportsList.length,
+                              itemBuilder: (context, index) {
+                                final report = reportsList[index];
+                                return Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: _buildIssueButton(
+                                    context,
+                                    report: report,
+                                  ),
+                                );
+                              },
+                            ),
             ),
           ],
         ),
@@ -103,26 +113,35 @@ class _GovernmentIssueScreenLowState extends State<GovernmentIssueScreenLow> {
 
   Widget _buildIssueButton(
     BuildContext context, {
-    required String issueId,
-    required String issueType,
-    required String description,
+    required LowPriorityReport report,
   }) {
     return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.85, // Consistent width
+      width: MediaQuery.of(context).size.width * 0.85,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF2C3E50),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          padding: const EdgeInsets.all(16), // Uniform padding
+          padding: const EdgeInsets.all(16),
         ),
-        onPressed: () {
-          Navigator.pushNamed(
+        onPressed: () async {
+          final result = await Navigator.pushNamed(
             context,
             '/status',
-            arguments: issueId, // Pass reportId dynamically
+            arguments: report.id,
           );
+
+          if (result == 'Done') {
+            setState(() {
+              reportsList.removeWhere((r) => r.id == report.id);
+            });
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text("Issue marked as Done and removed!")),
+            );
+          }
         },
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -134,7 +153,7 @@ class _GovernmentIssueScreenLowState extends State<GovernmentIssueScreenLow> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "ID: $issueId",
+                    "ID: ${report.id}",
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -143,7 +162,7 @@ class _GovernmentIssueScreenLowState extends State<GovernmentIssueScreenLow> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    "Type: $issueType",
+                    "Type: ${report.reportType}",
                     style: const TextStyle(
                       fontSize: 14,
                       color: Colors.white,
@@ -151,7 +170,7 @@ class _GovernmentIssueScreenLowState extends State<GovernmentIssueScreenLow> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    description,
+                    report.description,
                     style: const TextStyle(
                       fontSize: 12,
                       color: Colors.white,

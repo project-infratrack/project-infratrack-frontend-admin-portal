@@ -13,12 +13,14 @@ class GovernmentIssueScreenHigh extends StatefulWidget {
 
 class _GovernmentIssueScreenHighState extends State<GovernmentIssueScreenHigh> {
   int _selectedIndex = 0;
-  late Future<List<HighPriorityReport>> reportsFuture;
+  List<HighPriorityReport> reportsList = [];
+  bool isLoading = true;
+  bool hasError = false;
 
   @override
   void initState() {
     super.initState();
-    reportsFuture = HighPriorityReportService.fetchHighPriorityReports();
+    fetchReports();
   }
 
   void _onItemTapped(int index) {
@@ -29,6 +31,23 @@ class _GovernmentIssueScreenHighState extends State<GovernmentIssueScreenHigh> {
       Navigator.pushNamed(context, "/home");
     } else if (index == 1) {
       Navigator.pushNamed(context, "/history");
+    }
+  }
+
+  Future<void> fetchReports() async {
+    try {
+      final reports =
+          await HighPriorityReportService.fetchHighPriorityReports();
+      setState(() {
+        // ✅ Filter out Done reports
+        reportsList = reports.where((r) => r.status != 'Done').toList();
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        hasError = true;
+        isLoading = false;
+      });
     }
   }
 
@@ -69,36 +88,24 @@ class _GovernmentIssueScreenHighState extends State<GovernmentIssueScreenHigh> {
                       height: 200,
                     ),
                     const SizedBox(height: 30),
-                    FutureBuilder<List<HighPriorityReport>>(
-                      future: reportsFuture,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const CircularProgressIndicator();
-                        } else if (snapshot.hasError) {
-                          return Text('Error: ${snapshot.error}');
-                        } else if (!snapshot.hasData ||
-                            snapshot.data!.isEmpty) {
-                          return const Text('No high priority issues found');
-                        } else {
-                          final reports = snapshot.data!;
-                          return Column(
-                            children: reports.map((report) {
-                              return Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 8.0),
-                                child: _buildIssueButton(
-                                  context,
-                                  issueId: report.id,
-                                  issueType: report.reportType,
-                                  description: report.description,
-                                ),
-                              );
-                            }).toList(),
+                    if (isLoading)
+                      const CircularProgressIndicator()
+                    else if (hasError)
+                      const Text('Error loading reports')
+                    else if (reportsList.isEmpty)
+                      const Text('No high priority issues found.')
+                    else
+                      Column(
+                        children: reportsList.map((report) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: _buildIssueButton(
+                              context,
+                              report: report,
+                            ),
                           );
-                        }
-                      },
-                    ),
+                        }).toList(),
+                      ),
                   ],
                 ),
               ),
@@ -115,9 +122,7 @@ class _GovernmentIssueScreenHighState extends State<GovernmentIssueScreenHigh> {
 
   Widget _buildIssueButton(
     BuildContext context, {
-    required String issueId,
-    required String issueType,
-    required String description,
+    required HighPriorityReport report,
   }) {
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.85,
@@ -129,12 +134,23 @@ class _GovernmentIssueScreenHighState extends State<GovernmentIssueScreenHigh> {
           ),
           padding: const EdgeInsets.all(16),
         ),
-        onPressed: () {
-          Navigator.pushNamed(
+        onPressed: () async {
+          final result = await Navigator.pushNamed(
             context,
             '/status',
-            arguments: issueId, // 🔥 Pass reportId dynamically
+            arguments: report.id,
           );
+
+          if (result == 'Done') {
+            setState(() {
+              reportsList.removeWhere((r) => r.id == report.id);
+            });
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text("Issue marked as Done and removed!")),
+            );
+          }
         },
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -146,7 +162,7 @@ class _GovernmentIssueScreenHighState extends State<GovernmentIssueScreenHigh> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "ID: $issueId",
+                    "ID: ${report.id}",
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -155,7 +171,7 @@ class _GovernmentIssueScreenHighState extends State<GovernmentIssueScreenHigh> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    "Type: $issueType",
+                    "Type: ${report.reportType}",
                     style: const TextStyle(
                       fontSize: 14,
                       color: Colors.white,
@@ -163,7 +179,7 @@ class _GovernmentIssueScreenHighState extends State<GovernmentIssueScreenHigh> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    description,
+                    report.description,
                     style: const TextStyle(
                       fontSize: 12,
                       color: Colors.white,

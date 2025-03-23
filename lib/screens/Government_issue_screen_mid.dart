@@ -96,17 +96,15 @@ class _GovernmentIssueScreenMidState extends State<GovernmentIssueScreenMid> {
                             height: 200,
                           ),
                           const SizedBox(height: 30),
-                          // Dynamically show buttons from API data
                           ..._midPriorityReports.map((report) {
                             return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
                               child: _buildIssueButton(
                                 context,
                                 issueId: report.id,
                                 issueType: report.reportType,
                                 description: report.description,
-                                routeName: "/issueDetailMid",
-                                report: report,
                               ),
                             );
                           }).toList(),
@@ -129,30 +127,28 @@ class _GovernmentIssueScreenMidState extends State<GovernmentIssueScreenMid> {
     required String issueId,
     required String issueType,
     required String description,
-    required String routeName,
-    required MidServiceModel report,
   }) {
     return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.85, // Increased width for consistency
+      width: MediaQuery.of(context).size.width * 0.85,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF2C3E50),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          padding: const EdgeInsets.all(16), // Uniform padding
+          padding: const EdgeInsets.all(16),
         ),
         onPressed: () {
           Navigator.pushNamed(
             context,
-            routeName,
-            arguments: report,
+            '/status',
+            arguments: issueId, // Pass reportId dynamically
           );
         },
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.report, color: Colors.white), // Optional icon
+            const Icon(Icons.report, color: Colors.white),
             const SizedBox(width: 12),
             Expanded(
               child: Column(

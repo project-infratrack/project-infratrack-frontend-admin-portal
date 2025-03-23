@@ -11,8 +11,6 @@ import 'package:infratrack/screens/home.dart';
 import 'package:infratrack/screens/incoming.dart';
 import 'package:infratrack/screens/login.dart';
 
-// Placeholder for Reset Password
-
 void main() {
   runApp(const MyApp());
 }
@@ -32,12 +30,12 @@ class MyApp extends StatelessWidget {
           bodyMedium: TextStyle(color: Colors.white),
         ),
       ),
-      home: const LoginScreen(), // Default starting screen
+      home: const LoginScreen(),
+
+      // Static routes (for screens without dynamic data)
       routes: {
         "/login": (context) => const LoginScreen(),
         "/home": (context) => const HomeScreen(),
-        "/issue_description": (context) =>
-            const GovernmentIssueDescriptionScreen(),
         "/Gov_high": (context) => const GovernmentIssueScreenHigh(),
         "/Gov_mid": (context) => const GovernmentIssueScreenMid(),
         "/Gov_low": (context) => const GovernmentIssueScreenLow(),
@@ -45,7 +43,27 @@ class MyApp extends StatelessWidget {
         "/incoming": (context) => IncomingScreen(),
         "/Accept": (context) => const AcceptedScreen(),
         "/Reject": (context) => const IssueRejectedScreen(),
-        "/Status": (context) => const StatusScreen(),
+        // Removed static "/Status" route
+      },
+
+      // 🟢 Dynamic routes
+      onGenerateRoute: (settings) {
+        if (settings.name == '/issue_description') {
+          final reportId = settings.arguments as String;
+          return MaterialPageRoute(
+            builder: (context) =>
+                GovernmentIssueDescriptionScreen(reportId: reportId),
+          );
+        }
+
+        if (settings.name == '/status') {
+          final reportId = settings.arguments as String;
+          return MaterialPageRoute(
+            builder: (context) => StatusScreen(reportId: reportId),
+          );
+        }
+
+        return null;
       },
     );
   }

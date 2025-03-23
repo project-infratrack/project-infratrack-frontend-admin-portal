@@ -47,7 +47,8 @@ class _GovernmentIssueScreenHighState extends State<GovernmentIssueScreenHigh> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.account_circle, color: Colors.black, size: 28),
+            icon:
+                const Icon(Icons.account_circle, color: Colors.black, size: 28),
             onPressed: () {},
           ),
         ],
@@ -78,24 +79,26 @@ class _GovernmentIssueScreenHighState extends State<GovernmentIssueScreenHigh> {
                     FutureBuilder<List<HighPriorityReport>>(
                       future: reportsFuture,
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
                           return const CircularProgressIndicator();
                         } else if (snapshot.hasError) {
                           return Text('Error: ${snapshot.error}');
-                        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        } else if (!snapshot.hasData ||
+                            snapshot.data!.isEmpty) {
                           return const Text('No high priority issues found');
                         } else {
                           final reports = snapshot.data!;
                           return Column(
                             children: reports.map((report) {
                               return Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
                                 child: _buildIssueButton(
                                   context,
                                   issueId: report.id,
                                   issueType: report.reportType,
                                   description: report.description,
-                                  routeName: "/Status",
                                 ),
                               );
                             }).toList(),
@@ -122,7 +125,6 @@ class _GovernmentIssueScreenHighState extends State<GovernmentIssueScreenHigh> {
     required String issueId,
     required String issueType,
     required String description,
-    required String routeName,
   }) {
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.85,
@@ -132,15 +134,19 @@ class _GovernmentIssueScreenHighState extends State<GovernmentIssueScreenHigh> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          padding: const EdgeInsets.all(16), // Uniform padding for consistency
+          padding: const EdgeInsets.all(16),
         ),
         onPressed: () {
-          Navigator.pushNamed(context, routeName);
+          Navigator.pushNamed(
+            context,
+            '/status',
+            arguments: issueId, // 🔥 Pass reportId dynamically
+          );
         },
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.report, color: Colors.white), // Optional icon
+            const Icon(Icons.report, color: Colors.white),
             const SizedBox(width: 12),
             Expanded(
               child: Column(

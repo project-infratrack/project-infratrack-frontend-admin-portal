@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:infratrack/components/bottom_navigation.dart';
 import 'package:infratrack/components/googlemap.dart';
-import 'package:infratrack/services/statusService.dart';
-import 'package:infratrack/services/statusUpdateService.dart';
+import 'package:infratrack/Services/statusService.dart';
+import 'package:infratrack/Services/statusUpdateService.dart';
 import 'package:infratrack/model/statusServiceModel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

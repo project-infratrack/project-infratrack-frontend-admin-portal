@@ -3,7 +3,7 @@ import 'package:infratrack/screens/Gov_issue_description.dart';
 import 'package:infratrack/screens/Government_issue_screen_high.dart';
 import 'package:infratrack/screens/Government_issue_screen_low.dart';
 import 'package:infratrack/screens/Government_issue_screen_mid.dart';
-import 'package:infratrack/screens/History.dart';
+import 'package:infratrack/screens/history.dart'; // Changed from History.dart to history.dart
 import 'package:infratrack/screens/Status.dart';
 import 'package:infratrack/screens/home.dart';
 import 'package:infratrack/screens/incoming.dart';
@@ -37,8 +37,8 @@ class MyApp extends StatelessWidget {
         "/Gov_high": (context) => const GovernmentIssueScreenHigh(),
         "/Gov_mid": (context) => const GovernmentIssueScreenMid(),
         "/Gov_low": (context) => const GovernmentIssueScreenLow(),
-        "/history": (context) => HistoryScreen(),
-        "/incoming": (context) => IncomingScreen(),
+        "/history": (context) => const HistoryScreen(), // Added 'const' here
+        "/incoming": (context) => const IncomingScreen(),
         // Removed static "/Status" route
       },
 

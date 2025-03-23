@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:infratrack/components/bottom_navigation.dart';
 import 'package:infratrack/model/histroyServiceModel.dart';
 import 'package:infratrack/screens/Report.dart';
-import 'package:infratrack/services/historyService.dart';
+import 'package:infratrack/Services/historyService.dart';
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});
@@ -100,9 +100,7 @@ class HistoryScreen extends StatelessWidget {
   Widget _buildProblemCard(BuildContext context, HistoryServiceModel report) {
     return Card(
       elevation: 3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       color: const Color(0xFF2C3E50),
       margin: const EdgeInsets.only(bottom: 16),
       child: InkWell(
@@ -132,10 +130,7 @@ class HistoryScreen extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 "Complaint ID: ${report.id}",
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.white60,
-                ),
+                style: const TextStyle(fontSize: 14, color: Colors.white60),
               ),
               const SizedBox(height: 8),
               Row(
@@ -145,10 +140,7 @@ class HistoryScreen extends StatelessWidget {
                     report.priorityLevel,
                     getPriorityColor(report.priorityLevel),
                   ),
-                  _buildTag(
-                    report.status,
-                    getStatusColor(report.status),
-                  ),
+                  _buildTag(report.status, getStatusColor(report.status)),
                   const Icon(Icons.arrow_forward_ios, color: Colors.white),
                 ],
               ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:infratrack/components/bottom_navigation.dart';
+import 'package:infratrack/model/midServiceModel.dart';
+import 'package:infratrack/services/midService.dart';
 
 class GovernmentIssueScreenMid extends StatefulWidget {
   const GovernmentIssueScreenMid({super.key});
@@ -10,17 +12,41 @@ class GovernmentIssueScreenMid extends StatefulWidget {
 }
 
 class _GovernmentIssueScreenMidState extends State<GovernmentIssueScreenMid> {
-  int _selectedIndex = 0; // Track the selected index
+  int _selectedIndex = 0;
+  List<MidServiceModel> _midPriorityReports = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchReports();
+  }
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
-    // Handle navigation or any other logic for each index
     if (index == 0) {
-      Navigator.pushNamed(context, "/home"); // Example navigation
+      Navigator.pushNamed(context, "/home");
     } else if (index == 1) {
-      Navigator.pushNamed(context, "/history"); // Example navigation
+      Navigator.pushNamed(context, "/history");
+    }
+  }
+
+  Future<void> _fetchReports() async {
+    try {
+      MidService service = MidService();
+      List<MidServiceModel> reports =
+          await service.fetchAndStoreMidPriorityReports();
+      setState(() {
+        _midPriorityReports = reports;
+        _isLoading = false;
+      });
+    } catch (e) {
+      print("Error fetching reports: $e");
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -45,41 +71,52 @@ class _GovernmentIssueScreenMidState extends State<GovernmentIssueScreenMid> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Text(
-              "Mid priority issues",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Mid priority issues",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Center(
+                      child: Column(
+                        children: [
+                          Image.asset(
+                            'assets/infra_track_logo.png',
+                            height: 200,
+                          ),
+                          const SizedBox(height: 30),
+                          // Dynamically show buttons from API data
+                          ..._midPriorityReports.map((report) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              child: _buildIssueButton(
+                                context,
+                                issueId: report.id,
+                                issueType: report.reportType,
+                                description: report.description,
+                                routeName: "/issueDetailMid",
+                                report: report,
+                              ),
+                            );
+                          }).toList(),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 20),
-            Center(
-              child: Column(
-                children: [
-                  Image.asset(
-                    'assets/infra_track_logo.png',
-                    height: 200,
-                  ),
-                  const SizedBox(height: 50),
-                  _buildIssueButton(context, "Issue 1"),
-                  const SizedBox(height: 10),
-                  _buildIssueButton(context, "Issue 2"),
-                  const SizedBox(height: 10),
-                  _buildIssueButton(context, "Issue 3"),
-                  const SizedBox(height: 10),
-                  _buildIssueButton(context, "Issue 4"),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
       bottomNavigationBar: BottomNavigation(
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
@@ -87,28 +124,68 @@ class _GovernmentIssueScreenMidState extends State<GovernmentIssueScreenMid> {
     );
   }
 
-  Widget _buildIssueButton(BuildContext context, String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5.0),
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width *
-            0.65, // Custom width 65% of screen
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF2C3E50),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            padding: const EdgeInsets.symmetric(vertical: 16),
+  Widget _buildIssueButton(
+    BuildContext context, {
+    required String issueId,
+    required String issueType,
+    required String description,
+    required String routeName,
+    required MidServiceModel report,
+  }) {
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * 0.85, // Increased width for consistency
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF2C3E50),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
           ),
-          onPressed: () {},
-          child: Text(
-            title,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.white,
+          padding: const EdgeInsets.all(16), // Uniform padding
+        ),
+        onPressed: () {
+          Navigator.pushNamed(
+            context,
+            routeName,
+            arguments: report,
+          );
+        },
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Icon(Icons.report, color: Colors.white), // Optional icon
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "ID: $issueId",
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "Type: $issueType",
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    description,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

@@ -124,10 +124,11 @@ class _IncomingScreenState extends State<IncomingScreen> {
         ),
       ),
       bottomNavigationBar: BottomNavigation(
-        selectedIndex: 0,
+        // Set selectedIndex to -1 so that no bottom navigation item is highlighted
+        selectedIndex: -1,
         onItemTapped: (index) {
           if (index == 0) {
-            // Already on Incoming page
+            Navigator.pushReplacementNamed(context, "/home");
           } else if (index == 1) {
             Navigator.pushReplacementNamed(context, "/history");
           }

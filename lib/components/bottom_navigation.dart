@@ -82,7 +82,6 @@ class BottomNavigation extends StatelessWidget {
               label: "History",
               isSelected: selectedIndex == 1,
               onTap: () {
-                // Navigate to the "/history" page
                 Navigator.pushNamed(context, "/history");
               },
               navColor: navColor,

@@ -12,7 +12,8 @@ class GovernmentIssueScreenMid extends StatefulWidget {
 }
 
 class _GovernmentIssueScreenMidState extends State<GovernmentIssueScreenMid> {
-  int _selectedIndex = 0;
+  // Set to -1 so that none of the bottom navigation items is highlighted by default.
+  int _selectedIndex = -1;
   List<MidServiceModel> _midPriorityReports = [];
   bool _isLoading = true;
 
@@ -29,6 +30,8 @@ class _GovernmentIssueScreenMidState extends State<GovernmentIssueScreenMid> {
     if (index == 0) {
       Navigator.pushNamed(context, "/home");
     } else if (index == 1) {
+      Navigator.pushNamed(context, "/incoming");
+    } else if (index == 2) {
       Navigator.pushNamed(context, "/history");
     }
   }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:infratrack/components/bottom_navigation.dart';
 import 'package:infratrack/model/midServiceModel.dart';
-import 'package:infratrack/services/midService.dart';
+import 'package:infratrack/Services/midService.dart';
 
 class GovernmentIssueScreenMid extends StatefulWidget {
   const GovernmentIssueScreenMid({super.key});

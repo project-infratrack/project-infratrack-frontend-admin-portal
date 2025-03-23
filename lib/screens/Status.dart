@@ -198,13 +198,6 @@ class _StatusScreenState extends State<StatusScreen> {
             Navigator.of(context).pop();
           },
         ),
-        actions: [
-          IconButton(
-            icon:
-                const Icon(Icons.account_circle, color: Colors.black, size: 28),
-            onPressed: () {},
-          ),
-        ],
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())

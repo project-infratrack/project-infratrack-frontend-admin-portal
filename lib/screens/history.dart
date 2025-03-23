@@ -1,43 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:infratrack/components/bottom_navigation.dart';
+import 'package:infratrack/model/histroyServiceModel.dart';
+import 'package:infratrack/services/historyService.dart';
 
 class HistoryScreen extends StatelessWidget {
-  final List<Map<String, String>> reportedProblems = [
-    {
-      "title": "Pothole in Nugegoda",
-      "id": "CP123456",
-      "priority": "High Priority",
-      "status": "Completed",
-      "priorityColor": "0xFFFF6B6B",
-      "statusColor": "0xFF6BCB77",
-    },
-    {
-      "title": "Overgrown Tree in Malabe",
-      "id": "CP123487",
-      "priority": "Medium Priority",
-      "status": "Completed",
-      "priorityColor": "0xFFFEDC56",
-      "statusColor": "0xFF6BCB77",
-    },
-    {
-      "title": "Pothole in Kollupitiya",
-      "id": "CP123489",
-      "priority": "High Priority",
-      "status": "Completed",
-      "priorityColor": "0xFFFF6B6B",
-      "statusColor": "0xFF6BCB77",
-    },
-    {
-      "title": "Pothole in Bambalapitiya",
-      "id": "CP1234675",
-      "priority": "Low Priority",
-      "status": "Completed",
-      "priorityColor": "0xFFFEDC56",
-      "statusColor": "0xFF6BCB77",
-    },
-  ];
+  const HistoryScreen({super.key});
 
-  HistoryScreen({super.key});
+  // Helper function to choose a color based on the priority level.
+  Color getPriorityColor(String priority) {
+    if (priority.toLowerCase().contains('high')) {
+      return Colors.red;
+    } else if (priority.toLowerCase().contains('medium')) {
+      return Colors.amber;
+    } else {
+      return Colors.green;
+    }
+  }
+
+  // Helper function to choose a color based on the status.
+  Color getStatusColor(String status) {
+    if (status.toLowerCase() == 'done' || status.toLowerCase() == 'completed') {
+      return Colors.green;
+    } else {
+      return Colors.grey;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,11 +66,25 @@ class HistoryScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Expanded(
-              child: ListView.builder(
-                itemCount: reportedProblems.length,
-                itemBuilder: (context, index) {
-                  final problem = reportedProblems[index];
-                  return _buildProblemCard(context, problem);
+              child: FutureBuilder<List<HistoryServiceModel>>(
+                future: HistoryService().fetchDoneReports(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                    final reports = snapshot.data!;
+                    return ListView.builder(
+                      itemCount: reports.length,
+                      itemBuilder: (context, index) {
+                        final report = reports[index];
+                        return _buildProblemCard(context, report);
+                      },
+                    );
+                  } else {
+                    return const Center(child: Text("No reports found."));
+                  }
                 },
               ),
             ),
@@ -96,14 +97,15 @@ class HistoryScreen extends StatelessWidget {
           if (index == 0) {
             Navigator.pushReplacementNamed(context, "/home");
           } else if (index == 1) {
-            // Already on History page, no action needed.
+            // Already on History page.
           }
         },
       ),
     );
   }
 
-  Widget _buildProblemCard(BuildContext context, Map<String, String> problem) {
+  // Build a card widget for each report using the data from HistoryServiceModel.
+  Widget _buildProblemCard(BuildContext context, HistoryServiceModel report) {
     return Card(
       elevation: 3,
       shape: RoundedRectangleBorder(
@@ -122,7 +124,7 @@ class HistoryScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                problem["title"] ?? "",
+                report.reportType,
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -131,7 +133,7 @@ class HistoryScreen extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                problem["id"] ?? "",
+                report.id,
                 style: const TextStyle(
                   fontSize: 14,
                   color: Colors.white60,
@@ -142,12 +144,12 @@ class HistoryScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _buildTag(
-                    problem["priority"] ?? "",
-                    Color(int.parse(problem["priorityColor"]!)),
+                    report.priorityLevel,
+                    getPriorityColor(report.priorityLevel),
                   ),
                   _buildTag(
-                    problem["status"] ?? "",
-                    Color(int.parse(problem["statusColor"]!)),
+                    report.status,
+                    getStatusColor(report.status),
                   ),
                   const Icon(Icons.arrow_forward_ios, color: Colors.white),
                 ],
@@ -159,6 +161,7 @@ class HistoryScreen extends StatelessWidget {
     );
   }
 
+  // A helper widget to create a tag for displaying priority and status.
   Widget _buildTag(String text, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),

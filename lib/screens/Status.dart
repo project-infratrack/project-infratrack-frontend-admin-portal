@@ -1,8 +1,16 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:infratrack/components/bottom_navigation.dart';
+import 'package:infratrack/components/googlemap.dart';
+import 'package:infratrack/services/statusService.dart';
+import 'package:infratrack/services/statusUpdateService.dart';
+import 'package:infratrack/model/statusServiceModel.dart';
 
 class StatusScreen extends StatefulWidget {
-  const StatusScreen({super.key});
+  final String reportId;
+
+  const StatusScreen({super.key, required this.reportId});
 
   @override
   _StatusScreenState createState() => _StatusScreenState();
@@ -15,6 +23,114 @@ class _StatusScreenState extends State<StatusScreen> {
     "Ongoing",
     "Done",
   ];
+
+  StatusServiceModel? reportData;
+  bool isLoading = true;
+  bool hasError = false;
+
+  final StatusUpdateService updateService = StatusUpdateService();
+
+  @override
+  void initState() {
+    super.initState();
+    fetchReportData();
+  }
+
+  Future<void> fetchReportData() async {
+    final statusService = StatusService();
+    final result = await statusService.fetchReportStatus(widget.reportId);
+
+    if (result != null) {
+      setState(() {
+        reportData = result;
+        selectedPriority = result.status;
+        isLoading = false;
+      });
+    } else {
+      setState(() {
+        hasError = true;
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _updateReportStatus() async {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Updating status...")),
+    );
+
+    final success = await updateService.updateReportStatus(
+      widget.reportId,
+      reportData!,
+      selectedPriority!,
+    );
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Status updated successfully!")),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Failed to update status")),
+      );
+    }
+  }
+
+  /// 🗺️ Map Preview Widget
+  Widget _buildMapPreview(StatusServiceModel report) {
+    final LatLng reportLocation = LatLng(report.latitude, report.longitude);
+    return Container(
+      height: 180,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: Colors.grey[100],
+      ),
+      child: Stack(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: reportLocation,
+                zoom: 14,
+              ),
+              markers: {
+                Marker(
+                  markerId: const MarkerId("report-location"),
+                  position: reportLocation,
+                  draggable: false,
+                )
+              },
+              zoomGesturesEnabled: false,
+              scrollGesturesEnabled: false,
+              tiltGesturesEnabled: false,
+              rotateGesturesEnabled: false,
+              onMapCreated: (controller) {},
+            ),
+          ),
+          // Tap Overlay
+          Positioned.fill(
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(12),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          MapViewPopup(initialLocation: reportLocation),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,98 +149,121 @@ class _StatusScreenState extends State<StatusScreen> {
           IconButton(
             icon:
                 const Icon(Icons.account_circle, color: Colors.black, size: 28),
-            onPressed: () {
-              // Handle account icon tap
-            },
+            onPressed: () {},
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        child: Center(
-          child: Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            elevation: 4,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // Title & Complaint ID
-                  const Text(
-                    "Status: Pothole in Nugegoda",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : hasError
+              ? const Center(child: Text("Failed to load report details"))
+              : SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 8.0),
+                  child: Center(
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 4,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            // Title & Complaint ID
+                            Text(
+                              "Status: ${reportData?.reportType} in ${reportData?.location}",
+                              style: const TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              "Complaint ID: ${reportData?.id}",
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black54,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Pothole Image (from Base64)
+                            if (reportData?.image != null)
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.memory(
+                                  base64Decode(reportData!.image),
+                                  height: 180,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            const SizedBox(height: 16),
+
+                            // Description
+                            Text(
+                              reportData?.description ?? '',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.black87,
+                              ),
+                              textAlign: TextAlign.justify,
+                            ),
+                            const SizedBox(height: 16),
+
+                            /// 🗺️ Google Map Preview Here
+                            _buildMapPreview(reportData!),
+
+                            const SizedBox(height: 16),
+
+                            // Priority Dropdown
+                            _buildPriorityDropdown(),
+
+                            const SizedBox(height: 16),
+
+                            // Update Button
+                            ElevatedButton(
+                              onPressed: () {
+                                if (selectedPriority != null &&
+                                    reportData != null) {
+                                  _updateReportStatus();
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content:
+                                            Text("Please select a status")),
+                                  );
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF2C3E50),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 24, vertical: 12),
+                              ),
+                              child: const Text(
+                                "Update Status",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 16),
+                              ),
+                            ),
+
+                            const SizedBox(height: 24),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    "Complaint ID: CP123456",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black54,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Pothole Image
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(
-                      'assets/pothole.png',
-                      height: 180,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Description
-                  const Text(
-                    "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, "
-                    "when an unknown printer took a galley of type and scrambled it to make a type specimen book. "
-                    "It has survived not only five centuries, but also the leap into electronic typesetting, "
-                    "remaining essentially unchanged.",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.black87,
-                    ),
-                    textAlign: TextAlign.justify,
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Map Image
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(
-                      'assets/map_placeholder.png',
-                      height: 180,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Priority Dropdown
-                  _buildPriorityDropdown(),
-
-                  const SizedBox(height: 24),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
+                ),
       bottomNavigationBar: BottomNavigation(
         selectedIndex: 0,
-        onItemTapped: (index) {
-          // Handle navigation changes
-        },
+        onItemTapped: (index) {},
       ),
     );
   }
@@ -143,7 +282,7 @@ class _StatusScreenState extends State<StatusScreen> {
           dropdownColor: const Color(0xFF2C3E50),
           value: selectedPriority,
           hint: const Text(
-            "Choose Priority Type",
+            "Choose Status Type",
             style: TextStyle(color: Colors.white, fontSize: 16),
           ),
           icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
@@ -163,23 +302,6 @@ class _StatusScreenState extends State<StatusScreen> {
             });
           },
         ),
-      ),
-    );
-  }
-
-  Widget _buildActionButton(String text, Color color, VoidCallback onPressed) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-      ),
-      onPressed: onPressed,
-      child: Text(
-        text,
-        style: const TextStyle(color: Colors.white, fontSize: 16),
       ),
     );
   }

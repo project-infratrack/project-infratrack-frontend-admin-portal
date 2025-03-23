@@ -56,7 +56,7 @@ class HistoryScreen extends StatelessWidget {
           children: [
             const Center(
               child: Text(
-                "Your Reported Problems",
+                "Resolved Issue Reports",
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,

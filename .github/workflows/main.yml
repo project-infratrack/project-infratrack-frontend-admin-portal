@@ -31,7 +31,8 @@ jobs:
           echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" >> /usr/local/lib/android/sdk/licenses/android-sdk-license
           echo "84831b9409646a918e30573bab4c9c91346d8abd" > /usr/local/lib/android/sdk/licenses/android-sdk-preview-license
 
-      - run: |
+      - name: Build Flutter Application
+        run: |
           rm -f pubspec.lock
           flutter pub get
           flutter clean
@@ -40,7 +41,7 @@ jobs:
 
       - name: List build directory contents (for debugging)
         run: |
-          find project-infratrack-frontend-admin-portal/build -type f -name "*.apk" | sort
+          find build -type f -name "*.apk" | sort
 
       - name: Get latest release version and increment
         id: version
@@ -71,7 +72,7 @@ jobs:
       - name: Push to releases
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "project-infratrack-frontend-admin-portal/build/app/outputs/flutter-apk/app-*.apk"
+          artifacts: "build/app/outputs/flutter-apk/app-*.apk"
           tag: ${{ steps.version.outputs.VERSION }}
           token: ${{secrets.TOKEN}}
           name: "InfraTrack Release ${{ steps.version.outputs.VERSION }}"

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:infratrack/components/bottom_navigation.dart';
 import 'package:infratrack/model/highServiceModel.dart';
-import 'package:infratrack/services/highService.dart';
+import 'package:infratrack/Services/highService.dart';
 
 class GovernmentIssueScreenHigh extends StatefulWidget {
   const GovernmentIssueScreenHigh({super.key});

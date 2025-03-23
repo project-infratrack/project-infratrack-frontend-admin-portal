@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - release # Use your actual branch name
+      - release
 name: Build the application
 
 jobs:

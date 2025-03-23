@@ -12,7 +12,8 @@ class GovernmentIssueScreenHigh extends StatefulWidget {
 }
 
 class _GovernmentIssueScreenHighState extends State<GovernmentIssueScreenHigh> {
-  int _selectedIndex = 0;
+  // Set to -1 so that neither Home (0) nor History (1) is selected initially.
+  int _selectedIndex = -1;
   List<HighPriorityReport> reportsList = [];
   bool isLoading = true;
   bool hasError = false;
@@ -39,7 +40,7 @@ class _GovernmentIssueScreenHighState extends State<GovernmentIssueScreenHigh> {
       final reports =
           await HighPriorityReportService.fetchHighPriorityReports();
       setState(() {
-        // ✅ Filter out Done reports
+        // Filter out Done reports
         reportsList = reports.where((r) => r.status != 'Done').toList();
         isLoading = false;
       });

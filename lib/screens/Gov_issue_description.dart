@@ -150,10 +150,65 @@ class _GovernmentIssueDescriptionScreenState
     );
   }
 
+  Widget _buildPriorityDropdown() {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: const Color(0xFF2C3E50),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          isExpanded: true,
+          dropdownColor: const Color(0xFF2C3E50),
+          value: selectedPriority,
+          hint: const Text(
+            "Choose Priority Type",
+            style: TextStyle(color: Colors.white, fontSize: 16),
+          ),
+          icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+          style: const TextStyle(color: Colors.white, fontSize: 16),
+          items: priorityTypes.map((priority) {
+            return DropdownMenuItem(
+              value: priority,
+              child: Text(
+                priority,
+                style: const TextStyle(color: Colors.white),
+              ),
+            );
+          }).toList(),
+          onChanged: (value) {
+            setState(() {
+              selectedPriority = value;
+            });
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionButton(String text, Color color, VoidCallback onPressed) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: color,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+      ),
+      onPressed: onPressed,
+      child: Text(
+        text,
+        style: const TextStyle(color: Colors.white, fontSize: 16),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -224,7 +279,6 @@ class _GovernmentIssueDescriptionScreenState
 
                             /// 🗺️ Dynamic map
                             _buildMapPreview(reportData!),
-
                             const SizedBox(height: 16),
                             _buildPriorityDropdown(),
                             const SizedBox(height: 24),
@@ -248,63 +302,11 @@ class _GovernmentIssueDescriptionScreenState
                   ),
                 ),
       bottomNavigationBar: BottomNavigation(
-        selectedIndex: 0,
-        onItemTapped: (index) {},
-      ),
-    );
-  }
-
-  Widget _buildPriorityDropdown() {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: const Color(0xFF2C3E50),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          isExpanded: true,
-          dropdownColor: const Color(0xFF2C3E50),
-          value: selectedPriority,
-          hint: const Text(
-            "Choose Priority Type",
-            style: TextStyle(color: Colors.white, fontSize: 16),
-          ),
-          icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
-          style: const TextStyle(color: Colors.white, fontSize: 16),
-          items: priorityTypes.map((priority) {
-            return DropdownMenuItem(
-              value: priority,
-              child: Text(
-                priority,
-                style: const TextStyle(color: Colors.white),
-              ),
-            );
-          }).toList(),
-          onChanged: (value) {
-            setState(() {
-              selectedPriority = value;
-            });
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActionButton(String text, Color color, VoidCallback onPressed) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-      ),
-      onPressed: onPressed,
-      child: Text(
-        text,
-        style: const TextStyle(color: Colors.white, fontSize: 16),
+        // Set to -1 so that no bottom navigation item is highlighted by default.
+        selectedIndex: -1,
+        onItemTapped: (index) {
+          // Optionally, add navigation behavior if required.
+        },
       ),
     );
   }

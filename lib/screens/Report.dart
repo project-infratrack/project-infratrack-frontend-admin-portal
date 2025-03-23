@@ -100,7 +100,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -176,8 +176,11 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                   ),
                 ),
       bottomNavigationBar: BottomNavigation(
-        selectedIndex: 0,
-        onItemTapped: (index) {},
+        // Set selectedIndex to -1 so that no bottom navigation item is highlighted by default.
+        selectedIndex: -1,
+        onItemTapped: (index) {
+          // Add navigation actions here if needed.
+        },
       ),
     );
   }

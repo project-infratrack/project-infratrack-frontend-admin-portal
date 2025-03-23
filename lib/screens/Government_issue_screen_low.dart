@@ -12,7 +12,8 @@ class GovernmentIssueScreenLow extends StatefulWidget {
 }
 
 class _GovernmentIssueScreenLowState extends State<GovernmentIssueScreenLow> {
-  int _selectedIndex = 0;
+  // Set to -1 so that no bottom navigation item is selected by default.
+  int _selectedIndex = -1;
   List<LowPriorityReport> reportsList = [];
   bool isLoading = true;
   bool hasError = false;
@@ -65,43 +66,52 @@ class _GovernmentIssueScreenLowState extends State<GovernmentIssueScreenLow> {
           },
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            const Text(
-              "Low priority issues",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text(
+                "Low priority issues",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : hasError
-                      ? const Center(child: Text('Error loading reports'))
-                      : reportsList.isEmpty
-                          ? const Center(
-                              child: Text('No low priority issues found.'))
-                          : ListView.builder(
-                              itemCount: reportsList.length,
-                              itemBuilder: (context, index) {
-                                final report = reportsList[index];
-                                return Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 8.0),
-                                  child: _buildIssueButton(
-                                    context,
-                                    report: report,
-                                  ),
-                                );
-                              },
+              const SizedBox(height: 20),
+              Center(
+                child: Column(
+                  children: [
+                    Image.asset(
+                      'assets/infra_track_logo.png',
+                      height: 200,
+                    ),
+                    const SizedBox(height: 30),
+                    if (isLoading)
+                      const CircularProgressIndicator()
+                    else if (hasError)
+                      const Text('Error loading reports')
+                    else if (reportsList.isEmpty)
+                      const Text('No low priority issues found.')
+                    else
+                      Column(
+                        children: reportsList.map((report) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: _buildIssueButton(
+                              context,
+                              report: report,
                             ),
-            ),
-          ],
+                          );
+                        }).toList(),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: BottomNavigation(
@@ -139,7 +149,8 @@ class _GovernmentIssueScreenLowState extends State<GovernmentIssueScreenLow> {
 
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                  content: Text("Issue marked as Done and removed!")),
+                content: Text("Issue marked as Done and removed!"),
+              ),
             );
           }
         },

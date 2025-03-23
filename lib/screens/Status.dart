@@ -188,7 +188,7 @@ class _StatusScreenState extends State<StatusScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -294,8 +294,15 @@ class _StatusScreenState extends State<StatusScreen> {
                   ),
                 ),
       bottomNavigationBar: BottomNavigation(
-        selectedIndex: 0,
-        onItemTapped: (index) {},
+        // Set to -1 so that no bottom navigation item is selected by default.
+        selectedIndex: -1,
+        onItemTapped: (index) {
+          if (index == 0) {
+            Navigator.pushNamed(context, "/home");
+          } else if (index == 1) {
+            Navigator.pushNamed(context, "/history");
+          }
+        },
       ),
     );
   }

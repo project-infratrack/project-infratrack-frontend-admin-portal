@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:infratrack/components/bottom_navigation.dart';
 import 'package:infratrack/model/histroyServiceModel.dart';
+import 'package:infratrack/screens/Report.dart';
 import 'package:infratrack/services/historyService.dart';
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});
 
-  // Helper function to choose a color based on the priority level.
+  // Priority color helper
   Color getPriorityColor(String priority) {
     if (priority.toLowerCase().contains('high')) {
       return Colors.red;
@@ -17,7 +18,7 @@ class HistoryScreen extends StatelessWidget {
     }
   }
 
-  // Helper function to choose a color based on the status.
+  // Status color helper
   Color getStatusColor(String status) {
     if (status.toLowerCase() == 'done' || status.toLowerCase() == 'completed') {
       return Colors.green;
@@ -39,15 +40,6 @@ class HistoryScreen extends StatelessWidget {
             Navigator.pushReplacementNamed(context, "/home");
           },
         ),
-        actions: [
-          IconButton(
-            icon:
-                const Icon(Icons.account_circle, color: Colors.black, size: 28),
-            onPressed: () {
-              Navigator.pushReplacementNamed(context, "/profile");
-            },
-          ),
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -104,7 +96,7 @@ class HistoryScreen extends StatelessWidget {
     );
   }
 
-  // Build a card widget for each report using the data from HistoryServiceModel.
+  // Build a card widget
   Widget _buildProblemCard(BuildContext context, HistoryServiceModel report) {
     return Card(
       elevation: 3,
@@ -116,7 +108,13 @@ class HistoryScreen extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: () {
-          Navigator.pushReplacementNamed(context, "/problem_reported");
+          // Navigate to detailed Report screen
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ReportDetailScreen(reportId: report.id),
+            ),
+          );
         },
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -133,7 +131,7 @@ class HistoryScreen extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                report.id,
+                "Complaint ID: ${report.id}",
                 style: const TextStyle(
                   fontSize: 14,
                   color: Colors.white60,
@@ -161,7 +159,7 @@ class HistoryScreen extends StatelessWidget {
     );
   }
 
-  // A helper widget to create a tag for displaying priority and status.
+  // Priority and Status tag widget
   Widget _buildTag(String text, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),

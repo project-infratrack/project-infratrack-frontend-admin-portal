@@ -36,15 +36,6 @@ class _IncomingScreenState extends State<IncomingScreen> {
             Navigator.pushReplacementNamed(context, "/home");
           },
         ),
-        actions: [
-          IconButton(
-            icon:
-                const Icon(Icons.account_circle, color: Colors.black, size: 28),
-            onPressed: () {
-              Navigator.pushReplacementNamed(context, "/profile");
-            },
-          ),
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -69,11 +60,35 @@ class _IncomingScreenState extends State<IncomingScreen> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
+                    return Center(
+                      child: Text(
+                        'There are no incoming reports',
+                        style: const TextStyle(
+                            color: Color.fromARGB(255, 0, 102, 255)),
+                      ),
+                    );
                   } else if (snapshot.hasData) {
                     final reports = snapshot.data!;
                     if (reports.isEmpty) {
-                      return const Center(child: Text('No reports available'));
+                      // 🔥 Empty message with icon
+                      return const Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.info_outline,
+                                size: 50, color: Colors.grey),
+                            SizedBox(height: 12),
+                            Text(
+                              'There are no incoming reports',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black54,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
                     }
                     return ListView.builder(
                       itemCount: reports.length,
@@ -83,7 +98,24 @@ class _IncomingScreenState extends State<IncomingScreen> {
                       },
                     );
                   } else {
-                    return const Center(child: Text('No reports available'));
+                    return const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.info_outline,
+                              size: 50, color: Colors.grey),
+                          SizedBox(height: 12),
+                          Text(
+                            'There are no incoming reports',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black54,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
                   }
                 },
               ),
@@ -121,7 +153,6 @@ class _IncomingScreenState extends State<IncomingScreen> {
             arguments: report.id,
           );
 
-          // If Accepted or Rejected, reload list
           if (result == true) {
             setState(() {
               _loadIncomingReports();

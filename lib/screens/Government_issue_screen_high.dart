@@ -45,13 +45,6 @@ class _GovernmentIssueScreenHighState extends State<GovernmentIssueScreenHigh> {
             Navigator.pushNamed(context, "/home");
           },
         ),
-        actions: [
-          IconButton(
-            icon:
-                const Icon(Icons.account_circle, color: Colors.black, size: 28),
-            onPressed: () {},
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         child: Padding(

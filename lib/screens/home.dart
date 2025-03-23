@@ -39,109 +39,105 @@ class _HomeScreenState extends State<HomeScreen>
     });
   }
 
+  void _logout() {
+    // Add your logout logic here (clear shared preferences, etc.)
+    Navigator.pushReplacementNamed(context, '/login');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // A gradient background for a softer, more polished look.
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color.fromARGB(255, 255, 255, 255),
-              Color.fromARGB(255, 255, 255, 255)
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SafeArea(
-          child: ScaleTransition(
-            scale: _scaleAnimation,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Custom AppBar
-                Container(
-                  color: const Color.fromARGB(0, 255, 255, 255),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.menu_rounded,
-                            color: Color(0xFF2C3E50)),
-                        onPressed: () {},
+      backgroundColor: const Color(0xFFE6F1FA), // ✅ Same background color
+      body: SafeArea(
+        child: ScaleTransition(
+          scale: _scaleAnimation,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Custom AppBar
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    const Text(
+                      "HOME",
+                      style: TextStyle(
+                        color: Color(0xFF2C3E50),
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
                       ),
-                      const Text(
-                        "HOME",
-                        style: TextStyle(
-                          color: Color(0xFF2C3E50),
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
+                    ),
+                  ],
+                ),
+              ),
+
+              // Main Content
+              Expanded(
+                child: SingleChildScrollView(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 50),
+                      Image.asset(
+                        'assets/infra_track_logo.png',
+                        height: 200,
+                      ),
+                      const SizedBox(height: 20),
+                      IssueCard(
+                        title: "High Priority Issues",
+                        color: Colors.red,
+                        icon: Icons.warning_amber_rounded,
+                        onTap: () => Navigator.pushNamed(context, "/Gov_high"),
+                      ),
+                      const SizedBox(height: 20),
+                      IssueCard(
+                        title: "Mid Priority Issues",
+                        color: Colors.orangeAccent,
+                        icon: Icons.error_outline,
+                        onTap: () => Navigator.pushNamed(context, "/Gov_mid"),
+                      ),
+                      const SizedBox(height: 20),
+                      IssueCard(
+                        title: "Low Priority Issues",
+                        color: Colors.green,
+                        icon: Icons.check_circle_outline,
+                        onTap: () => Navigator.pushNamed(context, "/Gov_low"),
+                      ),
+                      const SizedBox(height: 40),
+
+                      // Logout Button
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF2C3E50),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 14, horizontal: 24),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: _logout,
+                        icon: const Icon(Icons.logout, color: Colors.white),
+                        label: const Text(
+                          "Logout",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.account_circle_rounded,
-                            color: Color(0xFF2C3E50)),
-                        onPressed: () {
-                          Navigator.pushNamed(context, "/issue_description");
-                        },
-                      ),
+                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
-
-                // Main Content
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 10),
-                    child: Column(
-                      children: [
-                        // Logo and Headings
-                        const SizedBox(height: 50),
-                        Image.asset(
-                          'assets/infra_track_logo.png',
-                          height: 200,
-                        ),
-
-                        // Ensure Issue Cards are right below the logo
-                        const SizedBox(
-                            height:
-                                20), // Adjust this space to fine-tune the layout
-                        IssueCard(
-                          title: "High Priority Issues",
-                          color: Colors.red,
-                          icon: Icons.warning_amber_rounded,
-                          onTap: () =>
-                              Navigator.pushNamed(context, "/Gov_high"),
-                        ),
-                        const SizedBox(
-                            height: 20), // Adjust space between cards if needed
-                        IssueCard(
-                          title: "Mid Priority Issues",
-                          color: Colors.orangeAccent,
-                          icon: Icons.error_outline,
-                          onTap: () => Navigator.pushNamed(context, "/Gov_mid"),
-                        ),
-                        const SizedBox(height: 20),
-                        IssueCard(
-                          title: "Low Priority Issues",
-                          color: Colors.green,
-                          icon: Icons.check_circle_outline,
-                          onTap: () => Navigator.pushNamed(context, "/Gov_low"),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-              ],
-            ),
+              )
+            ],
           ),
         ),
       ),
-      // Use your existing BottomNavigation
       bottomNavigationBar: BottomNavigation(
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
@@ -180,7 +176,7 @@ class _IssueCardState extends State<IssueCard>
       vsync: this,
       duration: const Duration(milliseconds: 200),
       lowerBound: 0.0,
-      upperBound: 0.03, // a slight “lift” on press
+      upperBound: 0.03,
     );
     _hoverAnimation =
         Tween<double>(begin: 1.0, end: 1.03).animate(_hoverController);

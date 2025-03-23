@@ -45,13 +45,6 @@ class _GovernmentIssueScreenLowState extends State<GovernmentIssueScreenLow> {
             Navigator.pushNamed(context, "/home");
           },
         ),
-        actions: [
-          IconButton(
-            icon:
-                const Icon(Icons.account_circle, color: Colors.black, size: 28),
-            onPressed: () {},
-          ),
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

@@ -63,13 +63,6 @@ class _GovernmentIssueScreenMidState extends State<GovernmentIssueScreenMid> {
             Navigator.pushNamed(context, "/home");
           },
         ),
-        actions: [
-          IconButton(
-            icon:
-                const Icon(Icons.account_circle, color: Colors.black, size: 28),
-            onPressed: () {},
-          ),
-        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())

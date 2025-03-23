@@ -135,21 +135,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 10),
 
-                      // Forgot Password
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, "/recover_password");
-                          },
-                          child: const Text(
-                            "Forgot password ?",
-                            style: TextStyle(color: Colors.black, fontSize: 14),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-
                       // Login Button
                       ElevatedButton(
                         onPressed: () async {
@@ -192,29 +177,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       const SizedBox(height: 20),
-
-                      // Sign-up Prompt
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            "Don't have an account? ",
-                            style: TextStyle(color: Color(0xFF000000)),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(context, "/signup");
-                            },
-                            child: const Text(
-                              "Sign up!",
-                              style: TextStyle(
-                                color: Colors.blue,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
                     ],
                   ),
                 ),

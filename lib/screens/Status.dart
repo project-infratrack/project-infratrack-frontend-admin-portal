@@ -6,6 +6,7 @@ import 'package:infratrack/components/googlemap.dart';
 import 'package:infratrack/services/statusService.dart';
 import 'package:infratrack/services/statusUpdateService.dart';
 import 'package:infratrack/model/statusServiceModel.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class StatusScreen extends StatefulWidget {
   final String reportId;
@@ -18,12 +19,7 @@ class StatusScreen extends StatefulWidget {
 
 class _StatusScreenState extends State<StatusScreen> {
   String? selectedPriority;
-  final List<String> priorityTypes = [
-    "Pending",
-    "Ongoing",
-    "Done",
-  ];
-
+  final List<String> priorityTypes = ["Pending", "Ongoing", "Done"];
   StatusServiceModel? reportData;
   bool isLoading = true;
   bool hasError = false;
@@ -46,10 +42,26 @@ class _StatusScreenState extends State<StatusScreen> {
         selectedPriority = result.status;
         isLoading = false;
       });
+      await loadSavedStatus();
     } else {
       setState(() {
         hasError = true;
         isLoading = false;
+      });
+    }
+  }
+
+  Future<void> saveStatus(String status) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('saved_status_${widget.reportId}', status);
+  }
+
+  Future<void> loadSavedStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedStatus = prefs.getString('saved_status_${widget.reportId}');
+    if (savedStatus != null) {
+      setState(() {
+        selectedPriority = savedStatus;
       });
     }
   }
@@ -66,9 +78,14 @@ class _StatusScreenState extends State<StatusScreen> {
     );
 
     if (success) {
+      await saveStatus(selectedPriority!);
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Status updated successfully!")),
       );
+
+      // Return true to parent screen
+      Navigator.pop(context, true);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Failed to update status")),
@@ -76,7 +93,6 @@ class _StatusScreenState extends State<StatusScreen> {
     }
   }
 
-  /// 🗺️ Map Preview Widget
   Widget _buildMapPreview(StatusServiceModel report) {
     final LatLng reportLocation = LatLng(report.latitude, report.longitude);
     return Container(
@@ -109,7 +125,6 @@ class _StatusScreenState extends State<StatusScreen> {
               onMapCreated: (controller) {},
             ),
           ),
-          // Tap Overlay
           Positioned.fill(
             child: Material(
               color: Colors.transparent,
@@ -128,6 +143,44 @@ class _StatusScreenState extends State<StatusScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildPriorityDropdown() {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: const Color(0xFF2C3E50),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          isExpanded: true,
+          dropdownColor: const Color(0xFF2C3E50),
+          value: selectedPriority,
+          hint: const Text(
+            "Choose Status Type",
+            style: TextStyle(color: Colors.white, fontSize: 16),
+          ),
+          icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+          style: const TextStyle(color: Colors.white, fontSize: 16),
+          items: priorityTypes.map((priority) {
+            return DropdownMenuItem(
+              value: priority,
+              child: Text(
+                priority,
+                style: const TextStyle(color: Colors.white),
+              ),
+            );
+          }).toList(),
+          onChanged: (value) {
+            setState(() {
+              selectedPriority = value;
+            });
+          },
+        ),
       ),
     );
   }
@@ -171,7 +224,6 @@ class _StatusScreenState extends State<StatusScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            // Title & Complaint ID
                             Text(
                               "Status: ${reportData?.reportType} in ${reportData?.location}",
                               style: const TextStyle(
@@ -190,8 +242,6 @@ class _StatusScreenState extends State<StatusScreen> {
                               ),
                             ),
                             const SizedBox(height: 16),
-
-                            // Pothole Image (from Base64)
                             if (reportData?.image != null)
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(12),
@@ -203,8 +253,6 @@ class _StatusScreenState extends State<StatusScreen> {
                                 ),
                               ),
                             const SizedBox(height: 16),
-
-                            // Description
                             Text(
                               reportData?.description ?? '',
                               style: const TextStyle(
@@ -214,18 +262,10 @@ class _StatusScreenState extends State<StatusScreen> {
                               textAlign: TextAlign.justify,
                             ),
                             const SizedBox(height: 16),
-
-                            /// 🗺️ Google Map Preview Here
                             _buildMapPreview(reportData!),
-
                             const SizedBox(height: 16),
-
-                            // Priority Dropdown
                             _buildPriorityDropdown(),
-
                             const SizedBox(height: 16),
-
-                            // Update Button
                             ElevatedButton(
                               onPressed: () {
                                 if (selectedPriority != null &&
@@ -253,7 +293,6 @@ class _StatusScreenState extends State<StatusScreen> {
                                     color: Colors.white, fontSize: 16),
                               ),
                             ),
-
                             const SizedBox(height: 24),
                           ],
                         ),
@@ -264,44 +303,6 @@ class _StatusScreenState extends State<StatusScreen> {
       bottomNavigationBar: BottomNavigation(
         selectedIndex: 0,
         onItemTapped: (index) {},
-      ),
-    );
-  }
-
-  Widget _buildPriorityDropdown() {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: const Color(0xFF2C3E50),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          isExpanded: true,
-          dropdownColor: const Color(0xFF2C3E50),
-          value: selectedPriority,
-          hint: const Text(
-            "Choose Status Type",
-            style: TextStyle(color: Colors.white, fontSize: 16),
-          ),
-          icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
-          style: const TextStyle(color: Colors.white, fontSize: 16),
-          items: priorityTypes.map((priority) {
-            return DropdownMenuItem(
-              value: priority,
-              child: Text(
-                priority,
-                style: const TextStyle(color: Colors.white),
-              ),
-            );
-          }).toList(),
-          onChanged: (value) {
-            setState(() {
-              selectedPriority = value;
-            });
-          },
-        ),
       ),
     );
   }
